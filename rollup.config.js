@@ -6,5 +6,6 @@ module.exports = {
     file: 'dist/index.js',
     format: 'cjs',
     plugins: [terser()],
+    external: ['fs', 'path', 'sharp', 'svelte/compiler'],
   },
 }

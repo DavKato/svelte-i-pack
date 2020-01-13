@@ -3,10 +3,10 @@
   "version": "0.1.1",
   "description": "Image generation/optimazation preprocessor for svelte/sapper",
   "main": "dist/index.js",
-  "svelte": "src/Image.svelte",
+  "svelte": "dist/Image.svelte",
   "scripts": {
     "test": "echo \"No test specified\"",
-    "build": "rollup -c"
+    "build": "rollup -c && cp src/Image.svelte dist/"
   },
   "keywords": [
     "svelte",
@@ -21,7 +21,8 @@
   "repository": "https://github.com/DavKato/svelte-i-pack",
   "license": "MIT",
   "files": [
-    "dist/"
+    "dist/index.js",
+    "dist/Image.svelte"
   ],
   "engines": {
     "node": ">= 8"
