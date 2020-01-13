@@ -2,17 +2,17 @@
   "name": "svelte-i-pack",
   "version": "0.1.0",
   "description": "Image generation/optimazation preprocessor for svelte/sapper",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "svelte": "src/Image.svelte",
   "scripts": {
-    "test": "echo \"No test specified\""
+    "test": "echo \"No test specified\"",
+    "build": "rollup -c"
   },
   "keywords": [
     "svelte",
     "preprocess",
     "sapper",
     "image",
-    "optimazation",
     "webp",
     "base64",
     "sharp"
@@ -21,26 +21,28 @@
   "repository": "https://github.com/DavKato/svelte-i-pack",
   "license": "MIT",
   "files": [
-    "src/index.js",
-    "src/Image.svelte",
-    "src/optimize.js",
-    "toBase64.js",
-    "util.js"
+    "dist/"
   ],
+  "engines": {
+    "node": ">= 8"
+  },
   "homepage": "https://github.com/DavKato/svelte-i-pack",
   "bugs": {
     "url": "https://github.com/DavKato/svelte-i-pack/issues"
   },
   "dependencies": {
     "sharp": "^0.23.4",
-    "svelte": "3.16.7"
+    "svelte": "^3.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.8.0",
     "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-node": "^11.0.0",
-    "eslint-config-standard": "^14.1.0",
     "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+    "eslint-plugin-standard": "^4.0.1",
+    "rollup": "^1.29.0",
+    "rollup-plugin-terser": "^5.2.0"
   }
 }
