@@ -1,0 +1,16 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "sourceType": "module"
+  },
+  "extends": ["standard"],
+  "rules": {
+    "comma-dangle": ["error", "always-multiline"],
+    "space-before-function-paren": "off",
+    "indent": "off"
+  }
+}
