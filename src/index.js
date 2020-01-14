@@ -5,6 +5,7 @@ import { mkdirp, getAst, getNodes, getProps, getSizes, cleanUp } from './util'
 import base64Processor from './toBase64'
 import imageProcessor from './optimize'
 
+/** OPTIONS */
 const defaults = {
   inputDir: 'content/img',
   quality: 75,
@@ -12,14 +13,19 @@ const defaults = {
   inlineThreshold: 5000,
   logging: true,
 }
+
+/** ENVIRONMENT */
 const outputDir = fs.existsSync('./static')
   ? './static/ipack'
   : './public/ipack'
 
+const sapper = './src/routes'
+const svelte = './src/App.svelte'
 const dependencies = fs.existsSync('./src/routes')
-  ? fs.readdirSync('./src/routes').map(name => path.resolve(`./src/${name}`))
-  : [path.resolve('./src/App.svelte')]
+  ? fs.readdirSync(sapper).map(name => path.resolve(`${sapper}/${name}`))
+  : [path.resolve(svelte)]
 
+/** CODE */
 const processManager = (content, imgNodes, options) => {
   const completed = imgNodes.reduce(
     (processed, node) => {
