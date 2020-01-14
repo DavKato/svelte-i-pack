@@ -22,8 +22,6 @@ const filterAttr = node => {
 const appendAttr = (src, attrArr) => {
   return attrArr.reduce((acc, el) => {
     const value = el.value[0] ? el.value[0].data : ''
-    console.log(value)
-
     return `${acc} ${el.name}="${value}"`
   }, src)
 }
