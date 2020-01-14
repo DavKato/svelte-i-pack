@@ -36,7 +36,6 @@
     "svelte": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.8.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.20.0",

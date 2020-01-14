@@ -21,11 +21,14 @@ const filterAttr = node => {
 
 const appendAttr = (src, attrArr) => {
   return attrArr.reduce((acc, el) => {
-    return `${acc} ${el.name}="${el.value[0].data}"`
+    const value = el.value[0] ? el.value[0].data : ''
+    console.log(value)
+
+    return `${acc} ${el.name}="${value}"`
   }, src)
 }
 
-const tagBuilder = newAttr => `<img ${newAttr}>\n`
+const tagBuilder = newAttr => `<img ${newAttr}>`
 
 const replaceTag = (content, offset, start, end, newTag) => {
   const pre = content.substring(0, start + offset)

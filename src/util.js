@@ -61,5 +61,5 @@ export const cleanUp = (outDir, activeFiles, logging) => {
       deleted.push(file)
     }
   })
-  if (deleted.length > 0 && logging) console.log('deleted:\n', deleted)
+  if (deleted.length > 0 && logging) console.log('<iPack> Deleted:\n', deleted)
 }

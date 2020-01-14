@@ -11,14 +11,16 @@ If you want more feature like Lazy loading with auto generated placeholder you s
 - Generate And Add Webp
 - Generate And Add Responsive Images
 - Automatically Converts Images With A Small Fils Size To Inline Base64
-- Clean Up And Make Sure There Is No Unused Image In The Served Folder
+- Clean Up And Make Sure There Is No Unused Image Left In The Served Folder
 
-```js
+### Full Example
+
+```html
 <script>
-Import Image from 'svelte-i-pack';
+  import Image from 'svelte-i-pack'
 </script>
 
-<Image
+<image
   class="leaf"
   src="leaf.png"
   width="400*2"
@@ -27,7 +29,8 @@ Import Image from 'svelte-i-pack';
   media="(max-width: 400px)"
   aSrc="grass.jpg"
   aWidth="40*3"
-  aSizes="40px" />
+  aSizes="40px"
+/>
 ```
 
 Will generate
@@ -141,7 +144,7 @@ const options = {
   /**
    * Specify input directory for your original images.
    * Original ones are simply treated as source and will not be included in the build.
-   * Should not specify set this value inside ./static.
+   * Thus, you should not set it in ./static.
    **/
   inputDir: 'content/img',
   /**
@@ -249,6 +252,6 @@ to
 
 ---
 
-Both of those works, but I would say this package works really well with utility-first style.
+Both works, but using utility-first css should be slightly optimal.
 
 By configuring Tailwind.css correctly you can eliminate the small overhead caused by :global-ing styles.

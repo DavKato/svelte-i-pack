@@ -12,7 +12,13 @@ const defaults = {
   inlineThreshold: 5000,
   logging: true,
 }
-const outputDir = './static/ipack'
+const outputDir = fs.existsSync('./static')
+  ? './static/ipack'
+  : './public/ipack'
+
+const dependencies = fs.existsSync('./src/routes')
+  ? fs.readdirSync('./src/routes')
+  : [path.resolve('./src/App.svelte')]
 
 const processManager = (content, imgNodes, options) => {
   const completed = imgNodes.reduce(
@@ -94,7 +100,7 @@ export default (options = {}) => {
   return {
     markup: async ({ content }) => ({
       code: await iPack(content, options),
-      dependencies: ['./src/routes/index.svelte'],
+      dependencies,
     }),
   }
 }
