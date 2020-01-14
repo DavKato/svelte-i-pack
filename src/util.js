@@ -39,7 +39,10 @@ export const getNodes = ast => {
 
 export const getProps = (node, attrs) => {
   const arr = attrs.map(el => node.attributes.find(a => a.name === el) || null)
-  return arr.map(el => (el ? el.value[0].data : el))
+  return arr.map(el => {
+    if (!el) return el
+    return Array.isArray(el.value) ? el.value[0].data : el.value
+  })
 }
 
 export const getSizes = rawWidth => {
@@ -52,10 +55,13 @@ export const getSizes = rawWidth => {
 }
 
 export const cleanUp = (outDir, activeFiles, logging) => {
+  console.log(activeFiles)
+
   const deleted = []
-  const dir = fs.readdirSync(outDir)
-  dir.forEach(filename => {
-    const file = path.resolve(outDir, filename)
+  const dir = fs.readdirSync(outDir).map(el => path.resolve(el))
+  console.log(dir)
+
+  dir.forEach(file => {
     if (!activeFiles.includes(file)) {
       fs.unlinkSync(file)
       deleted.push(file)
