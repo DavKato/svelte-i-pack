@@ -1,17 +1,16 @@
 <script>
   export let src,
     width,
-    sizes,
+    sizes = `${width.split('*')[0]}px`,
     alt = '',
     media = null,
     aSrc = null,
     aWidth = null,
-    aSizes = null,
+    aSizes = aWidth ? `${aWidth.split('*')[0]}px` : null,
     style = ''
   let className = ''
   export { className as class }
   const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x)
-
   const outDir = 'ipack'
 
   const widthToArr = obj => {
@@ -48,17 +47,17 @@
 </script>
 
 <picture>
-  {#if (media && aSrc && aWidth && aSizes)}
+  {#if (media && aSrc && aWidth)}
   <source
     {media}
     type="image/webp"
     srcset="{setSrcset({src: aSrc, width: aWidth, mime: 'webp'})}"
-    sizes="{aSizes || sizes}"
+    sizes="{aSizes}"
   />
   <source
     {media}
     srcset="{setSrcset({src: aSrc, width: aWidth})}"
-    sizes="{aSizes || sizes}"
+    sizes="{aSizes}"
   />
   {/if}
 

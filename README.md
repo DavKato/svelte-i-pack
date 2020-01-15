@@ -1,8 +1,8 @@
 # Svelte i-Pack
 
-> A [Rollup](https://rollupjs.org) preprocessor for image optimization and auto generation of responsive images for [Svelte](https://svelte.dev).
+> A [Rollup](https://rollupjs.org) plugin for image optimization and auto generation of responsive images for [Svelte](https://svelte.dev).
 
-\*This package is heavily inspired by [Svelte Image](https://github.com/matyunya/svelte-image).
+\*This package is inspired by [Svelte Image](https://github.com/matyunya/svelte-image).
 If you want more feature like Lazy loading with auto generated placeholder you should check Svelte Image out.
 
 ## Features
@@ -29,7 +29,6 @@ If you want more feature like Lazy loading with auto generated placeholder you s
   media="(max-width: 400px)"
   aSrc="grass.jpg"
   aWidth="40*3"
-  aSizes="40px"
 />
 ```
 
@@ -164,16 +163,18 @@ const options = {
 Standard html attributes. -These will be passed as normal attributes.
 
 - `src` _(required) -relative and static path only_
-- `sizes` _(required)_
 - `class`
 - `style`
 - `media`
 - `alt`
+- `sizes`
+
+  > When not specified, `sizes` will fall back to the value of the left part of the `width` - in the example below, `160px`.
 
 > You cannot pass `width` and `height`.
 > Use inline style or css instead.
 
-iPack specific attributes.
+iPack attributes.
 
 - `width` _(required)_
 
@@ -183,12 +184,12 @@ iPack specific attributes.
 
   > _example:_ `width="160*3"` will generate images with size of `[160, 320, 480]` for both png/jpg and webp.
 
-- `aSrc`
-- `aWIdth`
-- `aSizes`
+* `aSrc`
+* `aWIdth`
+* `aSizes`
   > When you specify `media` in art direction scenarios, you can specify their `src`, `width`, `sizes` with these props. _(a = alternative)_
-  > If you don't specify `aSizes`, value of `sizes` will be used.
-- `no-inline`
+  > If you don't specify `aSizes`, value of the left part of the `aWidth` will be used.
+* `no-inline`
 
   > Pass this prop if you don't want the image to be converted to inlined-base64. This should be desirable for the images that get used multiple times in the same page.
 
@@ -206,7 +207,7 @@ _However_, since Svelte's style is scoped by default, you need to tweek a little
 
 ---
 
-1. Use `global:` style
+1. Use `:global` style
 
 Change
 
