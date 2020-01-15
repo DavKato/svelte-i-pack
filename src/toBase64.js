@@ -50,5 +50,3 @@ export default (content, offset, node, inPath) => {
 
   return { content, offset }
 }
-
-//

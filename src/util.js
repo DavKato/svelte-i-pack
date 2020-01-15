@@ -55,14 +55,11 @@ export const getSizes = rawWidth => {
 }
 
 export const cleanUp = (outDir, activeFiles, logging) => {
-  console.log(activeFiles)
-
   const deleted = []
-  const dir = fs.readdirSync(outDir).map(el => path.resolve(el))
-  console.log(dir)
+  const dir = fs.readdirSync(outDir).map(el => path.resolve(outDir, el))
 
   dir.forEach(file => {
-    if (!activeFiles.includes(file)) {
+    if (!activeFiles.has(file)) {
       fs.unlinkSync(file)
       deleted.push(file)
     }

@@ -1,7 +1,7 @@
 {
   "name": "svelte-i-pack",
   "version": "0.1.5",
-  "description": "Image generation/optimazation preprocessor for svelte/sapper",
+  "description": "Image generation/optimazation rollup-plugin for svelte/sapper using sharp",
   "main": "dist/index.js",
   "svelte": "dist/Image.svelte",
   "scripts": {
@@ -10,11 +10,9 @@
   },
   "keywords": [
     "svelte",
-    "preprocess",
+    "rollup",
     "sapper",
     "image",
-    "webp",
-    "base64",
     "sharp"
   ],
   "author": "Davide Kato <oliancho.web@gmail.com>",

@@ -19,12 +19,6 @@ const outputDir = fs.existsSync('./static')
   ? './static/ipack'
   : './public/ipack'
 
-const sapper = './src/routes'
-const svelte = './src/App.svelte'
-const dependencies = fs.existsSync('./src/routes')
-  ? fs.readdirSync(sapper).map(name => path.resolve(`${sapper}/${name}`))
-  : [path.resolve(svelte)]
-
 /** CODE */
 const processManager = (content, imgNodes, options) => {
   const completed = imgNodes.reduce(
@@ -79,22 +73,16 @@ const processManager = (content, imgNodes, options) => {
   }
 }
 
-const iPack = async (content, options) => {
-  if (!content.includes('<Image')) return content
+const iPack = (content, options) => {
+  if (!content.includes('<Image')) {
+    return { processed: content, files: [], promises: [] }
+  }
 
   mkdirp(options.outputDir)
-
   const ast = getAst(content)
   const imgNodes = getNodes(ast)
-  const { processed, files, promises } = processManager(
-    content,
-    imgNodes,
-    options,
-  )
 
-  await Promise.all(promises)
-  cleanUp(options.outputDir, files, options.logging)
-  return processed
+  return processManager(content, imgNodes, options)
 }
 
 export default (options = {}) => {
@@ -103,10 +91,26 @@ export default (options = {}) => {
     ...options,
     outputDir,
   }
+  const activeList = new Set()
+  const promiseList = []
   return {
-    markup: async ({ content }) => ({
-      code: await iPack(content, options),
-      dependencies,
-    }),
+    name: 'iPack',
+    transform(code, id) {
+      if (path.extname(id) !== '.svelte') return null
+
+      const { processed, files, promises } = iPack(code, options)
+
+      files.forEach(el => activeList.add(el))
+      promiseList.concat(promises)
+
+      return {
+        code: processed,
+        map: null,
+      }
+    },
+    async buildEnd() {
+      await Promise.all(promiseList)
+      cleanUp(options.outputDir, activeList, options.logging)
+    },
   }
 }

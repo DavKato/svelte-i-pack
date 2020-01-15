@@ -1,8 +1,8 @@
 # Svelte i-Pack
 
-> A [Svelte](https://svelte.dev) preprocessor for image optimization and auto generation of responsive images.
+> A [Rollup](https://rollupjs.org) preprocessor for image optimization and auto generation of responsive images for [Svelte](https://svelte.dev).
 
-This package is heavily inspired by [Svelte Image](https://github.com/matyunya/svelte-image).
+\*This package is heavily inspired by [Svelte Image](https://github.com/matyunya/svelte-image).
 If you want more feature like Lazy loading with auto generated placeholder you should check Svelte Image out.
 
 ## Features
@@ -74,60 +74,50 @@ Will generate
 yarn add -D svelte-i-pack
 ```
 
-### With `rollup-plugin-svelte`
+(_requires svelte >= v3_)
+
+### With `Svelte`
+
+Simply add iPack() in the rollup plugins _**before**_ svelte plugin.
 
 ```js
 // rollup.config.js
-import svelte from 'rollup-plugin-svelte';
 import iPack from 'svelte-i-pack';
 
 export default {
   ...,
   plugins: [
-    svelte({
-
-      preprocess: iPack({ /* options */ })
-      /**
-       * or if you have more processors:
-       * */
-      preprocess: [
-        iPack(),
-        ...
-      ]
-    })
+    iPack({ /* options */ }),
+    svelte({ ... }),
+    ...
   ]
 }
 ```
 
 ### With `Sapper`
 
-[Sapper](https://sapper.svelte.dev/) has two build configurations, one for the client bundle and one for the server.
+Pretty much the same as Svelte.
+However, [Sapper](https://sapper.svelte.dev/) has two build configurations, one for the client bundle and one for the server.
 To use `svelte-i-pack` with Sapper, you need to define it on both configurations.
 
 ```js
 // ...
 import iPack from 'svelte-i-pack';
 
-const preprocess = iPack({ /* options */ })
-// Or if you have other preprocessors:
-const preprocess = [
-  iPack(),
-  postcss({ plugins: [require('autoprefixer')()] }),
-  globalStyle(),
-]
+const iPackOptions = { /* options if needed */ }
 
 export default {
   client: {
     plugins: [
+      iPack(iPackOptions),
       svelte({
-        preprocess
         // ...
       }),
   },
   server: {
     plugins: [
+      iPack(iPackOptions),
       svelte({
-        preprocess
         // ...
       }),
     ],
