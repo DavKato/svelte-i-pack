@@ -1,9 +1,19 @@
 import path from 'path'
 import fs from 'fs'
 
-import { mkdirp, getAst, getNodes, getProps, getSizes, cleanUp } from './util'
+import {
+  mkdirp,
+  getAst,
+  getNodes,
+  getProps,
+  getSizes,
+  getOutPath,
+  getLocalFiles,
+  log,
+  cleanUp,
+} from './util'
 import base64Processor from './toBase64'
-import imageProcessor from './optimize'
+import generateImg from './generateImg'
 
 /** OPTIONS */
 const defaults = {
@@ -20,97 +30,118 @@ const outputDir = fs.existsSync('./static')
   : './public/ipack'
 
 /** CODE */
-const processManager = (content, imgNodes, options) => {
-  const completed = imgNodes.reduce(
-    (processed, node) => {
-      const [src, width, noInline] = getProps(node, [
-        'src',
-        'width',
-        'no-inline',
-      ])
-
-      const inPath = path.resolve(options.inputDir, src)
-
-      if (!noInline && fs.statSync(inPath).size <= options.inlineThreshold) {
-        const inlined = base64Processor(
-          processed.content,
-          processed.offset,
-          node,
-          inPath,
-        )
-        return { ...processed, ...inlined }
-      }
-
-      const sizes = getSizes(width)
-      const [files, promises] = imageProcessor(sizes, inPath, options)
-
-      files.forEach(el => processed.files.push(el))
-      promises.forEach(el => processed.promises.push(el))
-
-      const [aSrc, aWidth] = getProps(node, ['aSrc', 'aWidth'])
-      if (aSrc) {
-        const aInPath = path.resolve(options.inputDir, aSrc)
-        const aSizes = getSizes(aWidth)
-        const [files, promises] = imageProcessor(aSizes, aInPath, options)
-        files.forEach(el => processed.files.push(el))
-        promises.forEach(el => processed.promises.push(el))
-      }
-
-      return processed
-    },
-    {
-      content,
-      offset: 0,
-      files: [],
-      promises: [],
-    },
-  )
-
-  return {
-    processed: completed.content,
-    files: completed.files,
-    promises: completed.promises,
-  }
-}
-
-const iPack = (content, options) => {
-  if (!content.includes('<Image')) {
-    return { processed: content, files: [], promises: [] }
-  }
-
-  mkdirp(options.outputDir)
-  const ast = getAst(content)
-  const imgNodes = getNodes(ast)
-
-  return processManager(content, imgNodes, options)
-}
-
 export default (options = {}) => {
   options = {
     ...defaults,
     ...options,
     outputDir,
+    server: false,
   }
-  const activeList = new Set()
-  const promiseList = []
+  const stateStore = new Map()
+  const localStore = new Set()
+  let promiseList = []
   return {
     name: 'iPack',
+
+    options(op) {
+      if (op.input.server) options.server = true
+    },
+
     transform(code, id) {
-      if (path.extname(id) !== '.svelte') return null
+      if (path.extname(id) !== '.svelte' || !code.includes('<Image')) {
+        return null
+      }
+      // Initialize
+      this.addWatchFile(id)
+      mkdirp(options.outputDir)
+      if (localStore.size === 0) {
+        getLocalFiles(options.outputDir).forEach(file => localStore.add(file))
+      }
+      stateStore.delete(id)
+      stateStore.set(id, new Map())
 
-      const { processed, files, promises } = iPack(code, options)
+      // Get Component Data
+      const ast = getAst(code)
+      const imgNodes = getNodes(ast)
+      const processed = imgNodes.reduce(
+        (processed, node) => {
+          const [src, width, aSrc, aWidth, noInline] = getProps(node, [
+            'src',
+            'width',
+            'aSrc',
+            'aWidth',
+            'no-inline',
+          ])
+          const inPath = path.resolve(options.inputDir, src)
 
-      files.forEach(el => activeList.add(el))
-      promiseList.concat(promises)
+          if (
+            !noInline &&
+            fs.statSync(inPath).size <= options.inlineThreshold
+          ) {
+            // The only code mutation in the plugin
+            return base64Processor(
+              processed.code,
+              processed.offset,
+              node,
+              inPath,
+            )
+          }
+          if (options.server) return processed
+
+          // Set Component Data to State
+          const setInfo = (width, inPath, options) => {
+            const sizes = getSizes(width)
+            sizes.forEach(size => {
+              const output = getOutPath(size, inPath, options.outputDir)
+              output.forEach(el => {
+                stateStore.get(id).set(el, { input: inPath, size })
+              })
+            })
+          }
+          setInfo(width, inPath, options)
+          if (aSrc) {
+            const inPath = path.resolve(options.inputDir, aSrc)
+            setInfo(aWidth, inPath, options)
+          }
+
+          return processed
+        },
+        {
+          code,
+          offset: 0,
+        },
+      )
+
+      // Generate New Images
+      const newFiles = []
+      stateStore.get(id).forEach((val, key) => {
+        if (!localStore.has(key)) {
+          newFiles.push({
+            input: val.input,
+            output: key,
+            size: val.size,
+          })
+        }
+      })
+
+      const promises = generateImg(newFiles, options)
+      promises.forEach(promise => promiseList.push(promise))
 
       return {
-        code: processed,
+        code: processed.code,
         map: null,
+        ast,
       }
     },
     async buildEnd() {
-      await Promise.all(promiseList)
-      cleanUp(options.outputDir, activeList, options.logging)
+      if (options.server) return
+      const resolved = await Promise.all(promiseList)
+      promiseList = []
+      log('created', resolved, options.logging)
+
+      localStore.clear()
+      stateStore.forEach(val => val.forEach((v, key) => localStore.add(key)))
+      cleanUp(options.outputDir, localStore, options.logging)
     },
   }
 }

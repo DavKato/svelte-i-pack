@@ -54,18 +54,34 @@ export const getSizes = rawWidth => {
   return widthArr
 }
 
+export const getOutPath = (size, inPath, outputDir) => {
+  const { name, ext } = path.parse(inPath)
+  const withoutExt = path.resolve(outputDir, name) + `-${size}`
+  const outPath = [`${withoutExt}${ext}`, `${withoutExt}.webp`]
+  return outPath
+}
+
+export const getLocalFiles = outDir =>
+  fs.readdirSync(outDir).map(el => path.resolve(outDir, el))
+
+export const log = (title, arr, logging) => {
+  if (arr.length > 0 && logging) {
+    arr = arr.map(el => path.relative('./', el))
+    const color =
+      title === 'deleted' ? '\x1b[91m%s\x1b[0m' : '\x1b[36m%s\x1b[0m'
+    console.log('\n🖼  iPack')
+    console.log(color, title, arr, '\n')
+  }
+}
+
 export const cleanUp = (outDir, activeFiles, logging) => {
   const deleted = []
-  const dir = fs.readdirSync(outDir).map(el => path.resolve(outDir, el))
-
+  const dir = getLocalFiles(outDir)
   dir.forEach(file => {
     if (!activeFiles.has(file)) {
       fs.unlinkSync(file)
       deleted.push(file)
     }
   })
-  if (deleted.length > 0 && logging) {
-    console.log('\x1b[36m%s\x1b[0m', '\n🖼  iPack')
-    console.log('\x1b[91m%s\x1b[0m', 'deleted:', deleted, '\n')
-  }
+  log('deleted', deleted, logging)
 }

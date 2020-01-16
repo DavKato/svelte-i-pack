@@ -150,7 +150,7 @@ const options = {
    **/
   inlineThreshold: 5000,
   /**
-   * If true, spits out an array of deleted image files right after the clean up (in case there were unused files in the output folder).
+   * If true, logs all an array of created and deleted images.
    **/
   logging: true,
 }
