@@ -86,6 +86,7 @@ export default (options = {}) => {
               inPath,
             )
           }
+
           if (options.server) return processed
 
           // Set Component Data to State
