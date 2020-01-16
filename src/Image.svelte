@@ -7,8 +7,7 @@
     aSrc = null,
     aWidth = null,
     aSizes = aWidth ? `${aWidth.split('*')[0]}px` : null,
-    style = '',
-    noInline = false
+    style = ''
   let className = ''
   export { className as class }
   const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x)

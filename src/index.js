@@ -12,7 +12,7 @@ import {
   log,
   cleanUp,
 } from './util'
-import base64Processor from './toBase64'
+import { insertBase64, replaceTag, resetOffset } from './insertBase64'
 import generateImg from './generateImg'
 
 /** OPTIONS */
@@ -79,12 +79,17 @@ export default (options = {}) => {
             fs.statSync(inPath).size <= options.inlineThreshold
           ) {
             // The only code mutation in the plugin
-            return base64Processor(
+            return insertBase64(processed.code, processed.offset, node, inPath)
+          }
+          if (noInline) {
+            const { start, end } = noInline
+            processed.code = replaceTag(
               processed.code,
               processed.offset,
-              node,
-              inPath,
+              start,
+              end,
             )
+            processed.offset = resetOffset(processed.offset, start, end)
           }
 
           if (options.server) return processed

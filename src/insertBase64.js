@@ -28,17 +28,17 @@ const appendAttr = (src, attrArr) => {
 
 const tagBuilder = newAttr => `<img ${newAttr}>`
 
-const replaceTag = (code, offset, start, end, newTag) => {
+export const replaceTag = (code, offset, start, end, newTag) => {
   const pre = code.substring(0, start + offset)
   const post = code.substring(end + offset)
-  return pre + newTag + post
+  return newTag ? pre + newTag + post : pre + post
 }
 
-const resetOffset = (offset, start, end, newTag) => {
-  return newTag.length - (end - start) + offset
+export const resetOffset = (offset, start, end, newTag) => {
+  return newTag ? newTag.length - (end - start) + offset : end - start + offset
 }
 
-export default (code, offset, node, inPath) => {
+export const insertBase64 = (code, offset, node, inPath) => {
   const { start, end } = node
 
   const newSrc = base64converter(inPath)

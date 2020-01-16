@@ -41,7 +41,7 @@ export const getProps = (node, attrs) => {
   const arr = attrs.map(el => node.attributes.find(a => a.name === el) || null)
   return arr.map(el => {
     if (!el) return el
-    return Array.isArray(el.value) ? el.value[0].data : el.value
+    return Array.isArray(el.value) ? el.value[0].data : el
   })
 }
 
