@@ -31,11 +31,11 @@ const tagBuilder = newAttr => `<img ${newAttr}>`
 export const replaceTag = (code, offset, start, end, newTag) => {
   const pre = code.substring(0, start + offset)
   const post = code.substring(end + offset)
-  return newTag ? pre + newTag + post : pre + post
+  return pre + newTag + post
 }
 
 export const resetOffset = (offset, start, end, newTag) => {
-  return newTag ? newTag.length - (end - start) + offset : end - start + offset
+  return newTag.length - (end - start) + offset
 }
 
 export const insertBase64 = (code, offset, node, inPath) => {

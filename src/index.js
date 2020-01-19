@@ -88,8 +88,9 @@ export default (options = {}) => {
               processed.offset,
               start,
               end,
+              '',
             )
-            processed.offset = resetOffset(processed.offset, start, end)
+            processed.offset = resetOffset(processed.offset, start, end, '')
           }
 
           if (options.server) return processed
