@@ -22,12 +22,15 @@
     return { ...obj, width: widthArr }
   }
 
-  const setNameAndMime = obj => {
-    const filename = obj.src
+  const getFileName = src => {
+    return src
       .split('/')
       .slice(-1)
       .join('')
-      .split('.')
+  }
+
+  const setNameAndMime = obj => {
+    const filename = getFileName(obj.src).split('.')
     const orgMime = filename.splice(-1, 1).join('')
     const name = filename.join('.')
     const mime = obj.mime || orgMime
@@ -44,6 +47,14 @@
   const removeLastComma = str => str.slice(0, -1)
 
   const setSrcset = pipe(widthToArr, setNameAndMime, dataToStr, removeLastComma)
+
+  const fallbackSrcset = setSrcset({ src, width })
+  const t = fallbackSrcset
+    .split(',')
+    .slice(-1)
+    .join('')
+  const i = t.indexOf(' ')
+  const lastResort = t.substring(0, i)
 </script>
 
 <picture>
@@ -68,8 +79,8 @@
   />
   <img
     class="{className}"
-    srcset="{setSrcset({src, width})}"
-    {src}
+    srcset="{fallbackSrcset}"
+    src="{lastResort}"
     {sizes}
     {alt}
     {style}
