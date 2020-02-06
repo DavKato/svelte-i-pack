@@ -5,7 +5,7 @@ const base64converter = inPath => {
   return `src="data:image/png;base64, ${s}"`
 }
 
-const filterAttr = node => {
+const isTrash = name => {
   const trash = [
     'src',
     'width',
@@ -16,13 +16,16 @@ const filterAttr = node => {
     'aSizes',
     'no-inline',
   ]
-  return node.attributes.filter(attr => !trash.includes(attr.name))
+  return trash.some(el => el === name)
 }
 
-const appendAttr = (src, attrArr) => {
-  return attrArr.reduce((acc, el) => {
-    const value = el.value[0] ? el.value[0].data : ''
-    return `${acc} ${el.name}="${value}"`
+const deleteAttr = (code, node, src) => {
+  return node.attributes.reduce((acc, el) => {
+    if (isTrash(el.name)) {
+      return acc
+    }
+    const attr = code.substring(el.start, el.end)
+    return `${acc} ${attr}`
   }, src)
 }
 
@@ -42,9 +45,8 @@ export const insertBase64 = (code, offset, node, inPath) => {
   const { start, end } = node
 
   const newSrc = base64converter(inPath)
-  const filteredAttr = filterAttr(node)
-  const newAttr = appendAttr(newSrc, filteredAttr)
-  const newTag = tagBuilder(newAttr)
+  const filteredAttr = deleteAttr(code, node, newSrc)
+  const newTag = tagBuilder(filteredAttr)
   code = replaceTag(code, offset, start, end, newTag)
   offset = resetOffset(offset, start, end, newTag)
 
