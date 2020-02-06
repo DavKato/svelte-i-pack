@@ -19,12 +19,12 @@ const isTrash = name => {
   return trash.some(el => el === name)
 }
 
-const deleteAttr = (code, node, src) => {
+const deleteAttr = (code, offset, node, src) => {
   return node.attributes.reduce((acc, el) => {
     if (isTrash(el.name)) {
       return acc
     }
-    const attr = code.substring(el.start, el.end)
+    const attr = code.substring(el.start + offset, el.end + offset)
     return `${acc} ${attr}`
   }, src)
 }
@@ -45,7 +45,7 @@ export const insertBase64 = (code, offset, node, inPath) => {
   const { start, end } = node
 
   const newSrc = base64converter(inPath)
-  const filteredAttr = deleteAttr(code, node, newSrc)
+  const filteredAttr = deleteAttr(code, offset, node, newSrc)
   const newTag = tagBuilder(filteredAttr)
   code = replaceTag(code, offset, start, end, newTag)
   offset = resetOffset(offset, start, end, newTag)
