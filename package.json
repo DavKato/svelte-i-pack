@@ -1,6 +1,6 @@
 {
   "name": "svelte-i-pack",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Image generation/optimazation rollup-plugin for svelte/sapper using sharp",
   "main": "dist/index.js",
   "svelte": "dist/Image.svelte",
