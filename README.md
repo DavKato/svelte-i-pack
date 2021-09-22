@@ -1,3 +1,5 @@
+*This package is **no longer maintained** and most likely **won't work with the newest version of svelte/sapper and rollup.***
+
 # Svelte i-Pack
 
 > A [Rollup](https://rollupjs.org) plugin for image optimization and auto generation of responsive images for [Svelte](https://svelte.dev).
